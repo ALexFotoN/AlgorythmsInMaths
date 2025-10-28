@@ -10,7 +10,7 @@ class Program
 
     {
         // Задаём переменную
-        int number = 1600;
+        int number = 79524;
         
         // Делаем так, чтобы работали русские буквы
         Console.OutputEncoding = Encoding.UTF8;
