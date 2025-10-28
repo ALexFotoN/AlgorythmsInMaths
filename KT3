@@ -1,17 +1,9 @@
-using System.Collections.Generic;
 using System;
 
 using System.Text;
-
 class Program
 
 {
-    
-    // все варианты ходов коня
-    static readonly int[] dx = { -2, -2, -1, -1, 1, 1, 2, 2 };
-    static readonly int[] dy = { -1, 1, -2, 2, -2, 2, -1, 1 };
-
-    const int boardSize = 100;
 
     static void Main()
 
@@ -19,95 +11,121 @@ class Program
         
         Console.OutputEncoding = Encoding.UTF8;
 
-        // Собираем координаты начала
-        Console.Write("Введите координаты точки A (строка и столбец через пробел): ");
+        Console.Write("Введите количество строк (m): ");
 
-        string[] inputA = Console.ReadLine().Split();
-        int startX = int.Parse(inputA[0]);
-        int startY = int.Parse(inputA[1]);
+        int m = int.Parse(Console.ReadLine());
 
-        Console.Write("Введите координаты точки B (строка и столбец через пробел): ");
+        Console.Write("Введите количество столбцов (n): ");
 
-        // Собираем координаты конца
-        string[] inputB = Console.ReadLine().Split();
-        int endX = int.Parse(inputB[0]);
-        int endY = int.Parse(inputB[1]);
+        int n = int.Parse(Console.ReadLine());
 
+        int[,] table = new int[m, n];
 
-        // проверка на то, что начало и конец лежат на доске
-        if (!IsValidCell(startX, startY) || !IsValidCell(endX, endY))
+        int value = 1; // Начальное значение
+
+        for (int i = 0; i < m; i++)
 
         {
 
-            Console.WriteLine("Ошибка: введены некорректные координаты.");
-            return;
+            for (int j = 0; j < n; j++)
 
-        }
-
-        // проверка на то, что начало и конец равны
-        if (startX == endX && startY == endY)
-        {
-            Console.WriteLine("Конь уже находится в точке B. Минимальное количество ходов: 0");
-            return;
-        }
-
-
-        int result = MinKnightMoves(startX, startY, endX, endY);
-
-        Console.WriteLine($"Минимальное количество ходов коня из точки A ({startX}, {startY}) в точку B ({endX}, {endY}): {result}");
-
-    }
-
-    static bool IsValidCell(int x, int y)
-    {
-        return x >= 1 && x <= boardSize && y >= 1 && y <= boardSize;
-    }
-
-    static int MinKnightMoves(int startX, int startY, int endX, int endY)
-
-    {
-        Queue<(int x, int y, int moves)> queue = new Queue<(int, int, int)>();
-        
-        // кладём нулевой ход
-        queue.Enqueue((startX, startY, 0));
-
-        // Массив посещённых клеток
-        bool[,] visited = new bool[boardSize + 1, boardSize + 1];
-        visited[startX, startY] = true;
-
-
-        // Основной цикл BFS
-        
-        // пока в очереди есть числа
-        while (queue.Count > 0)
-        {
-            // если мы закончили - то возвращаем ход
-            
-            ///// забираем первое с конца число
-            var (x, y, moves) = queue.Dequeue();
-            
-            ///// если мы на финише - возвращаем кол-во ходом
-            if (x == endX && y == endY)
-                return moves;
-            
-            // проверяем все возможные ходы
-            for (int i = 0; i < 8; i++)
             {
-                int nextX = x + dx[i];
-                int netY = y + dy[i]
-                if (IsValidCell(nextX, nextY) && !visited[nextX, nextY])
-                // отмечаем все посещённые клетки и делаем новые очереди
-                {
-                    visited[nextX, nextY] = true;
-                    queue.Enqueue((nextX, nextY, moves + 1));
-                }
+
+                table[i, j] = value;
+
+                value++;
 
             }
 
         }
 
-        return -1;
+        Console.WriteLine("Сгенерированная таблица:");
+
+        for (int i = 0; i < m; i++)
+
+        {
+
+            for (int j = 0; j < n; j++)
+
+            {
+
+                Console.Write(table[i, j] + "\t");
+
+            }
+
+            Console.WriteLine();
+
+        }
+
+        Console.Write("Введите число k, которое нужно найти: ");
+
+        int k = int.Parse(Console.ReadLine());
+
+        // начинаем с первой строки
+        int row = 0;
+
+        // начинаем с последнего столбца
+        int col = n - 1;
+
+        // пока говорим "не нашли"
+        bool found = false;
+
+        while (row < m && col >= 0)
+
+        {
+
+            if (table[row, col] == k)
+
+            {
+
+                found = true;
+
+                Console.WriteLine($"Число {k} на ({row + 1}, {col + 1}).");
+
+                break;
+
+            }
+
+            else if (table[row, col] > k)
+
+            {
+
+                col--;
+
+            }
+
+            else
+
+            {
+
+                row++;
+
+            }
+
+        }
+
+        if (!found)
+
+        {
+
+            Console.WriteLine($"Число {k} отсутствует в таблице.");
+
+        }
+
     }
+
 }
 
-    
+
+
+Что делает алгоритм:
+Находит, есть ли заданное число k в таблице, где числа возрастают и по строкам, и по столбцам.
+
+Как работает:
+Таблица заполняется числами по возрастанию (1, 2, 3, ...).
+Поиск начинается в правом верхнем углу таблицы.
+Если текущее число больше k, двигаемся влево.
+Если текущее число меньше k, двигаемся вниз.
+Так продолжается, пока не найдем k или не выйдем за границы таблицы.
+
+Такой подход гарантирует поиск за O(m + n), потому что каждое движение либо уменьшает столбец, либо увеличивает строку, но не оба одновременно.
